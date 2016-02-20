@@ -2,8 +2,13 @@
  * Created by kiran on 2/19/2016.
  */
 var express = require('express');
+var bodyParser = require('body-parser');
+
 var app= express();
 var PORT = process.env.PORT || 3000;
+var todoNextId=1;
+
+app.use(bodyParser.json());
 var todos=[{
     id:1,
     description:"attend a meeting by 3",
@@ -39,6 +44,12 @@ todos.forEach(function(todo){
 });
 
 
+app.post('/todos/',function(req,res){
+var body = req.body;
+    body.id= todoNextId++;
+    todos.push(body);
+    res.json(todos);
+});
 
 app.listen(PORT,function(){
     console.log('Express listening on port'+PORT);
