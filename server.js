@@ -51,6 +51,21 @@ if(!_.isBoolean(body.completed) || !_.isString(body.description)){
     res.json(todos);
 });
 
+app.delete('todos/:id',function(req,res){
+    var todoId = parseInt(req.params.id,10);
+    var matchedTodo = _.findWhere(todos,{id:todoId});
+
+    if(!matchedTodo){
+        res.status(404).Json({"error":"no to do found with the Id"});
+    }
+    else{
+
+        todos = _.without(todos,matchedTodo);
+
+        res.json(matchedTodo);
+    }
+
+});
 app.listen(PORT,function(){
     console.log('Express listening on port'+PORT);
 });
