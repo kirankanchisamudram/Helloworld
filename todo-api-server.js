@@ -25,18 +25,45 @@ app.get('/',function(req,res){
     res.send('To do Api root');
 });
 app.get('/todos',function(req,res){
-    res.json(todos);
+    console.log("Get all todos...");
+   var query = req.query;
+    var where = {};
+    console.log("where...");
+    if(query.hasOwnProperty('completed')&& query.completed == true){
+        where.completed = true
+    }else if(query.hasOwnProperty('completed')&& query.completed == false){
+        where.completed = false
+    }
+    console.log("q before");
+   // if(query.hasOwnProperty('q')){
+    //    console.log("qqq test");
+    //    where.description ={
+    //        $like :'%'+query.q+'%'
+    //    }
+   // }
+    console.log("sss " + db.todos)
+    console.log("where: " + where)
+
+    db.todos.findAll({where: where}).then(function(todo){
+       // console.dir( todo)
+         res.json(todo);
+    }).error(function(error){
+        res.status(500).send();
+    });
 });
 
 app.get('/todos/:id',function(req,res){
    var todoId= parseInt(req.params.id,10);
-    var matchedTodo= _.findWhere(todos,{id:todoId});
-
-    if(matchedTodo){
-        res.json(matchedTodo);
+   // var matchedTodo= _.findWhere(todos,{id:todoId});
+db.todos.findById(todoId).then(function(todo){
+    if(!!todo){
+        res.json(todo.toJSON());
     }else{
         res.status(404).send();
     }
+}).error(function(error){
+res.status(500).send();
+});
 
 });
 
@@ -47,7 +74,7 @@ console.log("todos post....");
 // call create on db todo
     // respond with todo and 200
     // res.status(400) and json
-    db.tobo.create(body).then(function(todo){
+    db.todos.create(body).then(function(todo){
         console.log("post success");
 res.json(todo.toJSON());
     },function(error){
